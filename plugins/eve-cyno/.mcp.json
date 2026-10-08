@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "eve-cyno": {
+      "type": "http",
+      "url": "https://data.eve-cyno.dev/v1/mcp"
+    }
+  }
+}

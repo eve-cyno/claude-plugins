@@ -1,0 +1,23 @@
+{
+  "name": "eve-cyno",
+  "owner": {
+    "name": "Bythlak"
+  },
+  "metadata": {
+    "description": "Claude Code plugins for EVE Online players, backed by the EVE-Cyno data service."
+  },
+  "plugins": [
+    {
+      "name": "eve-cyno",
+      "source": "./plugins/eve-cyno",
+      "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, industry, routes. No API key needed.",
+      "version": "0.1.0",
+      "author": {
+        "name": "Bythlak"
+      },
+      "homepage": "https://eve-cyno.dev",
+      "license": "MIT",
+      "keywords": ["eve-online", "eve", "fitting", "mcp"]
+    }
+  ]
+}

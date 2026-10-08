@@ -1,0 +1,30 @@
+name: validate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: JSON parses
+        run: |
+          for f in .claude-plugin/marketplace.json plugins/*/.claude-plugin/plugin.json plugins/*/.mcp.json; do
+            jq empty "$f" && echo "ok $f"
+          done
+      - name: Required fields and layout
+        run: |
+          jq -e '.name == "eve-cyno" and (.owner.name | length > 0) and (.plugins | length > 0)' .claude-plugin/marketplace.json
+          for p in $(jq -r '.plugins[].source' .claude-plugin/marketplace.json); do
+            test -f "$p/.claude-plugin/plugin.json"
+            jq -e '.name and .version and .description and .license' "$p/.claude-plugin/plugin.json"
+            jq -e '.mcpServers | length > 0' "$p/.mcp.json"
+            for s in "$p"/skills/*/SKILL.md; do head -1 "$s" | grep -qx -- '---'; done
+            for c in "$p"/commands/*.md; do grep -q '^description:' "$c"; done
+          done
