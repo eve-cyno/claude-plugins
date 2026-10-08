@@ -46,7 +46,7 @@ No live market prices or price history (only Janice appraisal with the user's ke
 
 ## Attribution (keep it)
 
-- Game data is CCP/Fenris Creations data under the EVE Developer License Agreement. When you present results in a document, post or shared output, include: "EVE Online and all related marks are trademarks of Fenris Creations hf. Used with limited permission; no official affiliation or endorsement. Data via EVE-Cyno (https://eve-cyno.dev)." A short note is enough in plain chat.
+- Game data is Fenris Creations data under the EVE Developer License Agreement. When you present results in a document, post or shared output, include: "EVE Online and all related marks are trademarks of Fenris Creations hf. Used with limited permission; no official affiliation or endorsement. Data via EVE-Cyno (https://eve-cyno.dev)." A short note is enough in plain chat.
 - Text taken from the EVE University Wiki is CC BY-SA 4.0 (https://wiki.eveuniversity.org/); credit it and keep the licence on derived text.
 - Community fits belong to their authors and sites. Every fit carries an `attribution` object (`source`, `source_url`, `author` when known, `license`, `credit`, `license_url`). Show the author and source link next to every fit you show, and never present a community fit as your own.
 - Tool results report their sources (the MCP `_meta` attribution); cite them when asked where a number comes from.
