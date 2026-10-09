@@ -1,6 +1,6 @@
 {
   "name": "eve-cyno",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, industry, routes. No API key needed.",
   "author": {
     "name": "Bythlak"
@@ -8,5 +8,19 @@
   "homepage": "https://eve-cyno.dev",
   "repository": "https://github.com/eve-cyno/claude-plugins",
   "license": "MIT",
-  "keywords": ["eve-online", "eve", "fitting", "mcp"]
+  "keywords": [
+    "eve-online",
+    "eve",
+    "fitting",
+    "mcp"
+  ],
+  "userConfig": {
+    "janice_api_key": {
+      "type": "string",
+      "title": "Janice API key (optional)",
+      "description": "Your own Janice key (janice.e-351.com) for item appraisals with appraise_items. Leave empty to skip; everything else works without it. Sent only to data.eve-cyno.dev, which forwards it to Janice for that one request and never stores or logs it.",
+      "sensitive": true,
+      "required": false
+    }
+  }
 }

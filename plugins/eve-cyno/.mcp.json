@@ -2,7 +2,10 @@
   "mcpServers": {
     "eve-cyno": {
       "type": "http",
-      "url": "https://data.eve-cyno.dev/v1/mcp"
+      "url": "https://data.eve-cyno.dev/v1/mcp",
+      "headers": {
+        "X-Janice-Key": "${user_config.janice_api_key}"
+      }
     }
   }
 }

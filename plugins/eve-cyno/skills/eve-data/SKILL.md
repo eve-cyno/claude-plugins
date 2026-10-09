@@ -34,8 +34,8 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 
 ## Limits and tiers
 
-- Public tools need no key: everything above except `appraise_items`. Do not ask the user for an API key; none is issued.
-- `appraise_items` needs the user's own Janice key sent as the `X-Janice-Key` header, which this plugin does not configure. If the call fails, say prices are unavailable and do not guess ISK values.
+- Public tools need no key: everything above except `appraise_items`. Do not ask the user for an EVE-Cyno API key; none is issued.
+- `appraise_items` uses the user's own Janice key, entered as the optional "Janice API key" when the plugin was installed (sent as `X-Janice-Key`). If the call fails with `janice_key_required`, tell the user they can add their Janice key in the plugin settings (`/plugin`), say prices are unavailable, and do not guess ISK values.
 - Rate limits apply per client IP (MCP: 60 requests per minute). On `rate_limited` wait for `Retry-After` and do not loop.
 - Request bodies are capped at 64 KiB on the MCP endpoint.
 - Errors come back as `{"error":{"code","message"}}`; report the code rather than inventing an answer.

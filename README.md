@@ -23,7 +23,7 @@ MCP server `eve-cyno` (`https://data.eve-cyno.dev/v1/mcp`, streamable HTTP, stat
 - Fits: `validate_fitting`, `compute_fit_stats` (DPS, EHP, speed, align, capacitor from the dogma engine)
 - Skills and industry: `get_required_skills`, `get_production_chain`, `get_reprocessing_yield`
 - Space: `get_jumps_between`, `get_systems_in_region`, `get_npc_stations`
-- `appraise_items` needs your own Janice key and is not configured by this plugin
+- `appraise_items` needs your own Janice key: at install Claude Code asks for an optional **Janice API key** (stored as a sensitive value; leave it empty if you don't have one, and add it later in the plugin settings under `/plugin`). It is sent only to `data.eve-cyno.dev`, which forwards it to Janice for that one request and never stores or logs it
 
 Skill `eve-data`: tool selection, recommended flows (validate then compute), limits, what is not available, and the attribution rules.
 
@@ -35,7 +35,7 @@ Commands:
 
 ## Privacy and limits
 
-No API key and no account are needed. Requests go to `data.eve-cyno.dev` and are rate limited per client IP (60 MCP requests per minute). What you send to a tool, such as an EFT block or a system name, is processed by that service. See the [terms](https://data.eve-cyno.dev/terms). REST docs: <https://data.eve-cyno.dev>, [`llms.txt`](https://data.eve-cyno.dev/llms.txt), [OpenAPI](https://data.eve-cyno.dev/v1/openapi.yaml).
+No EVE-Cyno API key and no account are needed (the Janice key above is optional and only for appraisals). Requests go to `data.eve-cyno.dev` and are rate limited per client IP (60 MCP requests per minute). What you send to a tool, such as an EFT block or a system name, is processed by that service. See the [terms](https://data.eve-cyno.dev/terms). REST docs: <https://data.eve-cyno.dev>, [`llms.txt`](https://data.eve-cyno.dev/llms.txt), [OpenAPI](https://data.eve-cyno.dev/v1/openapi.yaml).
 
 ## Notices
 
