@@ -1,6 +1,6 @@
 ---
 name: eve-data
-description: Use when the user asks about EVE Online ships, modules, fittings (EFT blocks), DPS/EHP/cap stats, skills to fly or build something, manufacturing materials, reprocessing, routes between systems, or NPC stations. Explains which EVE-Cyno MCP tool to call and in what order, plus the attribution to keep.
+description: Use when the user asks about EVE Online ships, modules, fittings (EFT blocks), DPS/EHP/cap stats, skills to fly or build something, manufacturing materials, reprocessing, routes between systems, NPC stations, current Jita market prices, item details, sovereignty or recent system activity. Explains which EVE-Cyno MCP tool to call and in what order, plus the attribution to keep.
 ---
 
 # EVE Online data via the EVE-Cyno MCP server
@@ -24,7 +24,11 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 | Jumps and route between two systems | `get_jumps_between` (`prefer_high_sec`) |
 | Systems of a region by security band | `get_systems_in_region` |
 | NPC stations in a system | `get_npc_stations` |
-| ISK value of items | `appraise_items` (see limits: needs the user's own Janice key) |
+| Current Jita price of one item (best sell/buy, order counts) | `get_market_price` (live ESI) |
+| Item description, volume, mass, group | `get_type_info` (live ESI) |
+| Who holds sovereignty in a system | `get_sovereignty` (live ESI) |
+| Recent kills and jumps in a system | `get_system_activity` (live ESI) |
+| ISK value of a list of items | `appraise_items` (see limits: needs the user's own Janice key) |
 
 ## Recommended flows
 
@@ -37,12 +41,13 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 - Public tools need no key: everything above except `appraise_items`. Do not ask the user for an EVE-Cyno API key; none is issued.
 - `appraise_items` uses the user's own Janice key, entered as the optional "Janice API key" when the plugin was installed (sent as `X-Janice-Key`). If the call fails with `janice_key_required`, tell the user they can add their Janice key in the plugin settings (`/plugin`), say prices are unavailable, and do not guess ISK values.
 - Rate limits apply per client IP (MCP: 60 requests per minute). On `rate_limited` wait for `Retry-After` and do not loop.
+- The live ESI tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`) also share a limit of 10 calls per minute per client. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
 - Request bodies are capped at 64 KiB on the MCP endpoint.
 - Errors come back as `{"error":{"code","message"}}`; report the code rather than inventing an answer.
 
 ## Not available
 
-No live market prices or price history (only Janice appraisal with the user's key), no character or corporation data, no killboard, no sovereignty or system-activity data on the public tier, no community-fit search over MCP (the `/eve-fits` command uses the public REST endpoint instead). If a question needs one of these, say so.
+No price history (only the current Jita price of one item via `get_market_price`, or a Janice appraisal of a list with the user's key), no character or corporation data, no killboard, no community-fit search over MCP (the `/eve-fits` command uses the public REST endpoint instead). If a question needs one of these, say so.
 
 ## Attribution (keep it)
 
