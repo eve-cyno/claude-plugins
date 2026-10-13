@@ -9,10 +9,17 @@ A Claude Code plugin marketplace with one plugin, `eve-cyno`: the public EVE Onl
 /plugin install eve-cyno@eve-cyno
 ```
 
-Or, MCP server only, without the skill and commands:
+From a shell instead of a session: `claude plugin marketplace add eve-cyno/claude-plugins`, then `claude plugin install eve-cyno@eve-cyno` (pass keys with `--config api_key=…` or `--config janice_api_key=…`).
+
+Both keys are optional; Claude Code asks for them at install and you can change them later under `/plugin`:
+
+- **EVE-Cyno API key**: free; adds `get_fits`, `list_fits` and `analyze_battle` and doubles the per-minute limits. Get one with `/apikey create` in the [EVE-Cyno Discord](https://discord.gg/XZzkH38dt9) or at [ai.eve-cyno.dev](https://ai.eve-cyno.dev) (Settings, Data API keys). Sent only to `data.eve-cyno.dev`, in `X-API-Key`.
+- **Janice API key**: your own, for `appraise_items` (below).
+
+Or, MCP server only, without the skill and commands (add `--header "X-API-Key: ecd_…"` if you have a key):
 
 ```
-claude mcp add --transport http eve-cyno https://data.eve-cyno.dev/v1/mcp
+claude mcp add --transport http --scope user eve-cyno https://data.eve-cyno.dev/v1/mcp
 ```
 
 ## What you get
@@ -24,6 +31,7 @@ MCP server `eve-cyno` (`https://data.eve-cyno.dev/v1/mcp`, streamable HTTP, stat
 - Skills and industry: `get_required_skills`, `get_production_chain`, `get_reprocessing_yield`
 - Space: `get_jumps_between`, `get_systems_in_region`, `get_npc_stations`
 - Live data from EVE's public ESI (shared cache): `get_market_price` (Jita best sell/buy and order counts), `get_type_info`, `get_sovereignty`, `get_system_activity` (recent kills and jumps)
+- With an EVE-Cyno API key: `get_fits` and `list_fits` (community fits with author credit) and `analyze_battle`
 - `appraise_items` needs your own Janice key: at install Claude Code asks for an optional **Janice API key** (stored as a sensitive value; leave it empty if you don't have one, and add it later in the plugin settings under `/plugin`). It is sent only to `data.eve-cyno.dev`, which forwards it to Janice for that one request and never stores or logs it
 
 Skill `eve-data`: tool selection, recommended flows (validate then compute), limits, what is not available, and the attribution rules.
@@ -34,9 +42,11 @@ Commands:
 - `/eve-item <name>`: look up an item or ship
 - `/eve-fits <hull> [activity]`: community fits for a hull, with author credit (uses the public REST endpoint)
 
+If another plugin uses the same command name, use the namespaced form (`/eve-cyno:eve-fit` and so on). In Claude Code the MCP tools are named `mcp__plugin_eve-cyno_eve-cyno__<tool>`; to allow them all without a prompt, allow `mcp__plugin_eve-cyno_eve-cyno__*`.
+
 ## Privacy and limits
 
-No EVE-Cyno API key and no account are needed (the Janice key above is optional and only for appraisals). Requests go to `data.eve-cyno.dev` and are rate limited per client IP (60 MCP requests per minute; the live ESI tools also 10 calls per minute). What you send to a tool, such as an EFT block or a system name, is processed by that service. See the [terms](https://data.eve-cyno.dev/terms). Docs: <https://data.eve-cyno.dev/docs/>, [`llms.txt`](https://data.eve-cyno.dev/llms.txt), [OpenAPI](https://data.eve-cyno.dev/v1/openapi.yaml).
+No account and no key are needed for the public tools; both keys above are optional. Requests go to `data.eve-cyno.dev` and are rate limited per caller, per API key when one is sent, otherwise per client IP (60 MCP requests per minute, 120 with a key; the live ESI tools also 10 calls per minute). What you send to a tool, such as an EFT block or a system name, is processed by that service. See the [terms](https://data.eve-cyno.dev/terms). Docs: <https://data.eve-cyno.dev/docs/>, [`llms.txt`](https://data.eve-cyno.dev/llms.txt), [OpenAPI](https://data.eve-cyno.dev/v1/openapi.yaml).
 
 ## Support
 

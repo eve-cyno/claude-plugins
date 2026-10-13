@@ -10,8 +10,8 @@
     {
       "name": "eve-cyno",
       "source": "./plugins/eve-cyno",
-      "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, live Jita prices and ESI reads, industry, routes. No API key needed.",
-      "version": "0.2.1",
+      "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, live Jita prices and ESI reads, industry, routes. No API key needed for the public tools; a free key adds community fits and battle reports.",
+      "version": "0.2.2",
       "author": {
         "name": "Bythlak"
       },

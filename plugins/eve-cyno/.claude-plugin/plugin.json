@@ -1,7 +1,7 @@
 {
   "name": "eve-cyno",
-  "version": "0.2.1",
-  "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, live Jita prices and ESI reads, industry, routes. No API key needed.",
+  "version": "0.2.2",
+  "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, live Jita prices and ESI reads, industry, routes. No API key needed for the public tools; a free key adds community fits and battle reports.",
   "author": {
     "name": "Bythlak"
   },
@@ -16,6 +16,13 @@
     "esi"
   ],
   "userConfig": {
+    "api_key": {
+      "type": "string",
+      "title": "EVE-Cyno API key (optional)",
+      "description": "A free key adds get_fits, list_fits and analyze_battle and doubles the per-minute limits. Get one with /apikey create in the EVE-Cyno Discord or at ai.eve-cyno.dev (Settings, Data API keys). Leave empty to use the public tools only. Sent only to data.eve-cyno.dev, in the X-API-Key header.",
+      "sensitive": true,
+      "required": false
+    },
     "janice_api_key": {
       "type": "string",
       "title": "Janice API key (optional)",
