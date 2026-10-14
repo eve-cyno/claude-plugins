@@ -12,4 +12,4 @@ Follow the `eve-data` skill.
 3. Call `get_required_skills` (purpose `fly` for ships and modules, `build` for blueprints) and summarise the skill requirements.
 4. If the user asks how to build it, call `get_production_chain`.
 
-Present a compact summary. Prices are not available without the user's own Janice key; do not invent them.
+Present a compact summary. Prices: `get_market_price` gives the current Jita price of one item; to value a list of items use `appraise_items`, which gives an ESI estimate without a key or a Janice appraisal with the user's own Janice key. Say which one you got; do not invent prices.

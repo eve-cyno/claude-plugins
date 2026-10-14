@@ -28,7 +28,7 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 | Item description, volume, mass, group | `get_type_info` (live ESI) |
 | Who holds sovereignty in a system | `get_sovereignty` (live ESI) |
 | Recent kills and jumps in a system | `get_system_activity` (live ESI) |
-| ISK value of a list of items | `appraise_items` (see limits: needs the user's own Janice key) |
+| ISK value of a list of items | `appraise_items` (an estimate from ESI average prices; a Janice appraisal with the user's Janice key) |
 
 ## Recommended flows
 
@@ -38,17 +38,17 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 
 ## Limits and tiers
 
-- Public tools need no key: everything above except `appraise_items`.
-- `get_fits`, `list_fits` (community fits with author credit) and `analyze_battle` appear only when the user set the optional "EVE-Cyno API key" in the plugin (sent as `X-API-Key`). If the user asks for one of them and it is not in your tool list, tell them the key is free: `/apikey create` in the EVE-Cyno Discord (https://discord.gg/XZzkH38dt9) or ai.eve-cyno.dev, Settings, Data API keys; then add it under `/plugin`. Without a key, `/eve-fits` still finds community fits through the public REST endpoint.
-- `appraise_items` uses the user's own Janice key, entered as the optional "Janice API key" when the plugin was installed (sent as `X-Janice-Key`). If the call fails with `janice_key_required`, tell the user they can add their Janice key in the plugin settings (`/plugin`), say prices are unavailable, and do not guess ISK values.
-- Rate limits apply per caller: per API key when one is set, otherwise per client IP (MCP: 60 requests per minute, 120 with a key). On `rate_limited` wait for `Retry-After` and do not loop.
-- The live ESI tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`) also share a limit of 10 calls per minute per client. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
+- Public tools need no key: everything above, `appraise_items` included.
+- `analyze_battle` appears only when the user set the optional "EVE-Cyno API key" (sent as `X-API-Key`). If the user asks for a battle report and it is not in your tool list, tell them the key is free: `/apikey create` in the EVE-Cyno Discord (https://discord.gg/XZzkH38dt9) or ai.eve-cyno.dev, Settings, Data API keys; then add it under `/plugin`.
+- `appraise_items` works without any key: it estimates the value from EVE's average prices (ESI, refreshed daily) and says so; tell the user it is an estimate, not live Jita prices. With the user's own Janice key (the optional "Janice API key" in the plugin settings, sent as `X-Janice-Key`) it is a Janice appraisal with Jita buy, sell and split totals.
+- Rate limits apply per caller: per API key when one is set, otherwise per client IP (MCP: 20 requests per minute without a key, 120 with one; 200 a day without a key). On `rate_limited` wait for `Retry-After` and do not loop.
+- The live ESI tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`) also share a limit of 5 calls per minute per client without a key, 10 with one. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
 - Request bodies are capped at 64 KiB on the MCP endpoint.
 - Errors come back as `{"error":{"code","message"}}`; report the code rather than inventing an answer.
 
 ## Not available
 
-No price history (only the current Jita price of one item via `get_market_price`, or a Janice appraisal of a list with the user's key), no character or corporation data, no killboard, no community-fit search over MCP without an API key (the `/eve-fits` command uses the public REST endpoint instead). If a question needs one of these, say so.
+No price history (only the current Jita price of one item via `get_market_price`, or an appraisal of a list: an ESI estimate, or Janice with the user's key), no character or corporation data, no killboard, no free-text community-fit search over MCP without an API key (`get_fits` and `list_fits` filter by hull and activity; the `/eve-fits` command uses the public REST endpoint). If a question needs one of these, say so.
 
 ## Attribution (keep it)
 

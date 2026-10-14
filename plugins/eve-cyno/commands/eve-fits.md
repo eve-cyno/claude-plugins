@@ -6,7 +6,7 @@ allowed-tools: WebFetch(domain:data.eve-cyno.dev)
 
 Find community fits for: $ARGUMENTS
 
-Community-fit search is a public REST endpoint, not an MCP tool.
+Community-fit search by hull is a public REST endpoint (the `get_fits` and `list_fits` MCP tools filter the same corpus; free-text `q` search needs an API key).
 
 1. Resolve the hull name with the `search_item_by_name` MCP tool if it is loose or ambiguous.
 2. Fetch `https://data.eve-cyno.dev/v1/fits/search?ship=<hull>&limit=5` (URL-encode the name). Add `activity=pve` or `activity=pvp` and `tag=abyss` style filters when the user asked for them. There is no paging; one query returns one ranked page, at most 24 hits.
