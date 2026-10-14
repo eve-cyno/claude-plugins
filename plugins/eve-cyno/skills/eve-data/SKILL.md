@@ -48,7 +48,7 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 
 ## Not available
 
-No price history (only the current Jita price of one item via `get_market_price`, or an appraisal of a list: an ESI estimate, or Janice with the user's key), no character or corporation data, no killboard, no free-text community-fit search over MCP without an API key (`get_fits` and `list_fits` filter by hull and activity; the `/eve-fits` command uses the public REST endpoint). If a question needs one of these, say so.
+No price history (only the current Jita price of one item via `get_market_price`, or an appraisal of a list: an ESI estimate, or Janice with the user's key), no character or corporation data, no killboard, no free-text community-fit search over MCP (`get_fits` and `list_fits` filter by hull and activity; free-text search is the REST `q` parameter, which needs an API key; the `/eve-fits` command searches by hull on the public REST endpoint). If a question needs one of these, say so.
 
 ## Attribution (keep it)
 
