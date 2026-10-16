@@ -1,11 +1,13 @@
 ---
 name: eve-data
-description: Use when the user asks about EVE Online ships, modules, fittings (EFT blocks), DPS/EHP/cap stats, skills to fly or build something, manufacturing materials, reprocessing, routes between systems, NPC stations, current Jita market prices, item details, sovereignty or recent system activity. Explains which EVE-Cyno MCP tool to call and in what order, plus the attribution to keep.
+description: Answers EVE Online questions with deterministic tools instead of guesses: ships, modules, fittings (EFT blocks), DPS/EHP/cap stats, skills to fly or build something, manufacturing materials, reprocessing, routes between systems, NPC stations, current Jita market prices, item details, sovereignty and recent system activity. Use it whenever a question needs EVE data or a calculation. Says which EVE-Cyno tool to call and in what order, works over MCP or plain REST, and lists the attribution to keep.
 ---
 
-# EVE Online data via the EVE-Cyno MCP server
+# EVE Online data via the EVE-Cyno tools
 
-The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives deterministic EVE Online data and calculations. No language model is behind it: the same input gives the same answer. Tool names appear as `mcp__eve-cyno__<tool>` (or `mcp__plugin_eve-cyno_eve-cyno__<tool>` when installed as a plugin). Never estimate DPS, EHP, slot counts or type IDs from memory when a tool can answer.
+EVE-Cyno (`https://data.eve-cyno.dev`) gives deterministic EVE Online data and calculations. No language model is behind it: the same input gives the same answer. Never estimate DPS, EHP, slot counts or type IDs from memory when a tool can answer.
+
+Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https://data.eve-cyno.dev/v1/mcp`). The tool names vary by client: `mcp__eve-cyno__<tool>` in Claude Code with the server added by hand, `mcp__plugin_eve-cyno_eve-cyno__<tool>` when installed as the plugin; other clients show their own prefix. Without MCP, call the same tools over REST (see "Without MCP (REST)" below). The tool names and arguments are identical on both.
 
 ## Which tool when
 
@@ -25,7 +27,7 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 | Systems of a region by security band | `get_systems_in_region` |
 | NPC stations in a system | `get_npc_stations` |
 | Current Jita price of one item (best sell/buy, order counts) | `get_market_price` (live ESI) |
-| Item description, volume, mass, group | `get_type_info` (live ESI) |
+| Item name, description, volume, mass, group | `get_type_info` (answers from the local SDE, falls back to live ESI) |
 | Who holds sovereignty in a system | `get_sovereignty` (live ESI) |
 | Recent kills and jumps in a system | `get_system_activity` (live ESI) |
 | ISK value of a list of items | `appraise_items` (an estimate from ESI average prices; a Janice appraisal with the user's Janice key) |
@@ -39,16 +41,32 @@ The `eve-cyno` MCP server (`https://data.eve-cyno.dev/v1/mcp`) gives determinist
 ## Limits and tiers
 
 - Public tools need no key: everything above, `appraise_items` included.
-- `analyze_battle` appears only when the user set the optional "EVE-Cyno API key" (sent as `X-API-Key`). If the user asks for a battle report and it is not in your tool list, tell them the key is free: `/apikey create` in the EVE-Cyno Discord (https://discord.gg/XZzkH38dt9) or ai.eve-cyno.dev, Settings, Data API keys; then add it under `/plugin`.
-- `appraise_items` works without any key: it estimates the value from EVE's average prices (ESI, refreshed daily) and says so; tell the user it is an estimate, not live Jita prices. With the user's own Janice key (the optional "Janice API key" in the plugin settings, sent as `X-Janice-Key`) it is a Janice appraisal with Jita buy, sell and split totals.
-- Rate limits apply per caller: per API key when one is set, otherwise per client IP (MCP: 20 requests per minute without a key, 120 with one; 200 a day without a key). On `rate_limited` wait for `Retry-After` and do not loop.
-- The live ESI tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`) also share a limit of 5 calls per minute per client without a key, 10 with one. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
-- Request bodies are capped at 64 KiB on the MCP endpoint.
-- Errors come back as `{"error":{"code","message"}}`; report the code rather than inventing an answer.
+- `analyze_battle` appears only when the user set the optional "EVE-Cyno API key" (sent as `X-API-Key`). If the user asks for a battle report and it is not in your tool list, tell them the key is free: `/apikey create` in the EVE-Cyno Discord (https://discord.gg/XZzkH38dt9) or ai.eve-cyno.dev, Settings, Data API keys; then add it where your client keeps the server settings: under `/plugin` in Claude Code, as the `X-API-Key` header of the MCP server in other clients, or as the `X-API-Key` header of a REST call. Custom connectors in claude.ai and Claude Desktop reach the server from Anthropic's addresses, so without a key every connector user shares one per-client limit; a free key gives the user their own.
+- `appraise_items` works without any key: it estimates the value from EVE's average prices (ESI, refreshed daily) and says so; tell the user it is an estimate, not live Jita prices. With the user's own Janice key (the optional "Janice API key" in the plugin settings in Claude Code, or the `X-Janice-Key` header in any other client or REST call) it is a Janice appraisal with Jita buy, sell and split totals.
+- Rate limits apply per caller: per API key when one is set, otherwise per client IP (MCP: 20 requests per minute without a key, 120 with one; REST: 10 without, 60 with; 200 requests a day without a key). On `rate_limited` wait for `Retry-After` and do not loop.
+- The live ESI tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`) also share a limit of 5 calls per minute per client without a key, 10 with one (MCP and REST together). `get_type_info` reads the local SDE first and falls back to live ESI, but it still counts against this limit. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
+- Request bodies are capped at 64 KiB on the MCP and tool endpoints.
+- Errors come back as `{"error":{"code","message"}}` (over MCP, an error result with the code first); report the code rather than inventing an answer.
+
+## Without MCP (REST)
+
+If your client has no MCP support, call a tool with `POST https://data.eve-cyno.dev/v1/tool/<name>`. The body is the tool's arguments as a JSON object, sent with `Content-Type: application/json`:
+
+```
+curl -sS -X POST https://data.eve-cyno.dev/v1/tool/search_item_by_name \
+  -H 'Content-Type: application/json' \
+  -d '{"names":["Tritanium"]}'
+```
+
+The answer is `{"tool","version","result":{"text","data"},"attribution":[{"name","url","license"}]}`. `result.text` is the answer to read, `result.data` the typed result where the tool has one (otherwise `null`), `attribution` the sources to credit. Example reply: `{"tool":"search_item_by_name","version":"…","result":{"text":"Tritanium: type_id=34","data":null},"attribution":[…]}`.
+
+- Keys are optional: `X-API-Key: <key>` (or `Authorization: Bearer <key>`) for the keyed tools and higher limits; `X-Janice-Key: <key>` for a Janice appraisal in `appraise_items`. Send keys only to `data.eve-cyno.dev`.
+- Errors are JSON with a non-2xx status: `{"error":{"code":"...","message":"..."}}`, for example `404 unknown_tool`, `400 invalid_arguments`, `401 api_key_required`, `429 rate_limited` or `daily_quota_exceeded` (wait `Retry-After` seconds), `503 upstream_busy`.
+- The full tool list with every argument is at `https://data.eve-cyno.dev/llms-full.txt`; the OpenAPI document is `https://data.eve-cyno.dev/v1/openapi.yaml`. Read the argument list there before calling a tool you have not used.
 
 ## Not available
 
-No price history (only the current Jita price of one item via `get_market_price`, or an appraisal of a list: an ESI estimate, or Janice with the user's key), no character or corporation data, no killboard, no free-text community-fit search over MCP (`get_fits` and `list_fits` filter by hull and activity; free-text search is the REST `q` parameter, which needs an API key; the `/eve-fits` command searches by hull on the public REST endpoint). If a question needs one of these, say so.
+No price history (only the current Jita price of one item via `get_market_price`, or an appraisal of a list: an ESI estimate, or Janice with the user's key), no character or corporation data, no killboard, no free-text community-fit search over MCP (`get_fits` and `list_fits` filter by hull and activity; free-text search is the REST `q` parameter, which needs an API key; the Claude Code plugin's `/eve-fits` command searches by hull on the public REST endpoint). If a question needs one of these, say so.
 
 ## Attribution (keep it)
 
