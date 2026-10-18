@@ -47,7 +47,7 @@ MCP server `eve-cyno` (`https://data.eve-cyno.dev/v1/mcp`, streamable HTTP, stat
 - With an EVE-Cyno API key: `analyze_battle`, and free-text fit search for `/eve-fits`
 - `appraise_items` gives an estimate from ESI average prices without a key; your own Janice key makes it a Janice appraisal: at install Claude Code asks for an optional **Janice API key** (stored as a sensitive value; leave it empty if you don't have one, and add it later in the plugin settings under `/plugin`). It is sent only to `data.eve-cyno.dev`, which forwards it to Janice for that one request and never stores or logs it
 
-Skill `eve-data`: tool selection, recommended flows (fits: validate, which carries the stat card; map questions; batch first), limits, what is not available, and the attribution rules.
+Skill `eve-data`: tool selection, recommended flows (fits: validate, which carries the stat card on a valid fit; map questions; batch first), limits, what is not available, and the attribution rules.
 
 Commands:
 

@@ -19,7 +19,7 @@ Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https
 | Weapon-locked or unfamiliar hulls (Triglavian, pirate, faction) | `get_hull_facts` (when `compatible_weapons` is non-empty, use only those) |
 | Correct module name for a family ("Steel Plates", "Heat Sink") | `find_canonical_module` (with `size` Small/Medium/Large) |
 | Is this EFT fit legal (CPU, PG, slots)? | `validate_fitting` |
-| DPS, volley, EHP, speed, align, cap stability of an EFT fit | `validate_fitting` already ends with a `Fit stats:` card; `compute_fit_stats` only when it did not (a fixed fit) or to choose charges |
+| DPS, volley, EHP, speed, align, cap stability of an EFT fit | `validate_fitting` on a valid fit already ends with a `Fit stats:` card; `compute_fit_stats` only when it did not (a fixed fit) or to choose charges |
 | Skills needed to fly a ship or build an item | `get_required_skills` (`purpose`: fly or build) |
 | Materials to manufacture an item | `get_production_chain` (`me_level`, `runs`, rig and cost index optional) |
 | Reprocessing output | `get_reprocessing_yield` |
