@@ -43,11 +43,11 @@ MCP server `eve-cyno` (`https://data.eve-cyno.dev/v1/mcp`, streamable HTTP, stat
 - Skills and industry: `get_required_skills`, `get_production_chain`, `get_reprocessing_yield`
 - Space: `get_jumps_between` (summary or route, `avoid`, `via`), `get_jump_distances` (one origin to up to 200 systems), `find_systems` (filter by security, region, faction, wormhole class, stations, belts, planets, ice, distance, or jump-drive reach), `get_system_info`, `get_systems_in_region`, `get_npc_stations`, `plan_jump_route` (Jump Freighter, Rorqual, Black Ops, capital, titan or Ansiblex chain)
 - Prices: `get_market_price` (best sell/buy and order counts, per trade hub), `get_average_prices` (up to 200 items), `get_market_history`
-- Live data from EVE's public ESI (shared cache): `get_market_price`, `get_market_history`, `get_sovereignty`, `get_system_activity` (kills, jumps), and `plan_jump_route` with `avoid_incursions` or `live_info`; `get_thera_connections` is live data from EvE-Scout / Signal Cartel
+- Live data from EVE's public ESI (shared cache): `get_market_price`, `get_market_history`, `get_type_info`, `get_sovereignty`, `get_system_activity` (kills, jumps), and `plan_jump_route` with `avoid_incursions` or `live_info`; `get_thera_connections` is live data from EvE-Scout / Signal Cartel
 - With an EVE-Cyno API key: `analyze_battle`, and free-text fit search for `/eve-fits`
 - `appraise_items` gives an estimate from ESI average prices without a key; your own Janice key makes it a Janice appraisal: at install Claude Code asks for an optional **Janice API key** (stored as a sensitive value; leave it empty if you don't have one, and add it later in the plugin settings under `/plugin`). It is sent only to `data.eve-cyno.dev`, which forwards it to Janice for that one request and never stores or logs it
 
-Skill `eve-data`: tool selection, recommended flows (validate then compute), limits, what is not available, and the attribution rules.
+Skill `eve-data`: tool selection, recommended flows (fits: validate, which carries the stat card; map questions; batch first), limits, what is not available, and the attribution rules.
 
 Commands:
 
