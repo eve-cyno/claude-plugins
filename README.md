@@ -41,8 +41,9 @@ MCP server `eve-cyno` (`https://data.eve-cyno.dev/v1/mcp`, streamable HTTP, stat
 - Items and ships: `search_item_by_name`, `get_type_info` (name, description, volume, mass, group from the SDE, live ESI as fallback), `get_ship_stats`, `get_ship_bonuses`, `get_hull_facts`, `find_canonical_module`
 - Fits: `validate_fitting`, `compute_fit_stats` (DPS, EHP, speed, align, capacitor from the dogma engine)
 - Skills and industry: `get_required_skills`, `get_production_chain`, `get_reprocessing_yield`
-- Space: `get_jumps_between`, `get_systems_in_region`, `get_npc_stations`
-- Live data from EVE's public ESI (shared cache): `get_market_price` (Jita best sell/buy and order counts), `get_sovereignty`, `get_system_activity` (recent kills and jumps)
+- Space: `get_jumps_between` (summary or route, `avoid`, `via`), `get_jump_distances` (one origin to up to 200 systems), `find_systems` (filter by security, region, faction, wormhole class, stations, belts, planets, ice, distance, or jump-drive reach), `get_system_info`, `get_systems_in_region`, `get_npc_stations`, `plan_jump_route` (Jump Freighter, Rorqual, Black Ops, capital, titan or Ansiblex chain)
+- Prices: `get_market_price` (best sell/buy and order counts, per trade hub), `get_average_prices` (up to 200 items), `get_market_history`
+- Live data from EVE's public ESI (shared cache): `get_market_price`, `get_market_history`, `get_sovereignty`, `get_system_activity` (kills, jumps), and `plan_jump_route` with `avoid_incursions` or `live_info`; `get_thera_connections` is live data from EvE-Scout / Signal Cartel
 - With an EVE-Cyno API key: `analyze_battle`, and free-text fit search for `/eve-fits`
 - `appraise_items` gives an estimate from ESI average prices without a key; your own Janice key makes it a Janice appraisal: at install Claude Code asks for an optional **Janice API key** (stored as a sensitive value; leave it empty if you don't have one, and add it later in the plugin settings under `/plugin`). It is sent only to `data.eve-cyno.dev`, which forwards it to Janice for that one request and never stores or logs it
 
@@ -58,7 +59,7 @@ If another plugin uses the same command name, use the namespaced form (`/eve-cyn
 
 ## Privacy and limits
 
-No account and no key are needed for the public tools; both keys above are optional. Requests go to `data.eve-cyno.dev` and are rate limited per caller, per API key when one is sent, otherwise per client IP (20 MCP requests per minute without a key, 120 with one, 200 requests a day without a key; the live ESI tools also 5 calls per minute without a key, 10 with one). What you send to a tool, such as an EFT block or a system name, is processed by that service. See the [terms](https://data.eve-cyno.dev/terms). Docs: <https://data.eve-cyno.dev/docs/>, [`llms.txt`](https://data.eve-cyno.dev/llms.txt), [OpenAPI](https://data.eve-cyno.dev/v1/openapi.yaml).
+No account and no key are needed for the public tools; both keys above are optional. Requests go to `data.eve-cyno.dev` and are rate limited per caller, per API key when one is sent, otherwise per client IP (20 MCP requests per minute without a key, 120 with one, 200 requests a day without a key; the live tools also 5 calls per minute without a key, 10 with one). What you send to a tool, such as an EFT block or a system name, is processed by that service. See the [terms](https://data.eve-cyno.dev/terms). Docs: <https://data.eve-cyno.dev/docs/>, [`llms.txt`](https://data.eve-cyno.dev/llms.txt), [OpenAPI](https://data.eve-cyno.dev/v1/openapi.yaml).
 
 ## Support
 

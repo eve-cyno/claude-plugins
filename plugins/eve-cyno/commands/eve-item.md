@@ -8,7 +8,7 @@ Look up this EVE Online item or ship: $ARGUMENTS
 Follow the `eve-data` skill.
 
 1. Call `search_item_by_name` with the name to get the exact name and type ID. If nothing matches, say so and suggest close names.
-2. If it is a ship, also call `get_ship_stats` and `get_ship_bonuses` (and `get_hull_facts` if it is a specialist or faction hull).
+2. If it is a ship, call `get_ship_stats`, then `get_ship_bonuses`; for a specialist or faction hull call `get_hull_facts` instead of `get_ship_bonuses` (it includes the bonuses).
 3. Call `get_required_skills` (purpose `fly` for ships and modules, `build` for blueprints) and summarise the skill requirements.
 4. If the user asks how to build it, call `get_production_chain`.
 

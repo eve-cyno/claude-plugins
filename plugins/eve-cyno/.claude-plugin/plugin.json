@@ -1,7 +1,7 @@
 {
   "name": "eve-cyno",
-  "version": "0.3.0",
-  "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, live Jita prices and ESI reads, industry, routes. No API key needed for the public tools; a free key adds battle reports, free-text fit search and higher limits.",
+  "version": "0.4.0",
+  "description": "EVE Online data tools over MCP: fit validation and stats, ship and module facts, live market prices, industry, routes, system search, jump distances, jump-drive planning, market history, Thera connections. No API key needed for the public tools; a free key adds battle reports, free-text fit search and higher limits.",
   "author": {
     "name": "Bythlak"
   },

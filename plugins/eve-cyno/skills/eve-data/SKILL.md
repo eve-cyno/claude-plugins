@@ -1,6 +1,6 @@
 ---
 name: eve-data
-description: Answers EVE Online questions with deterministic tools instead of guesses: ships, modules, fittings (EFT blocks), DPS/EHP/cap stats, skills to fly or build something, manufacturing materials, reprocessing, routes between systems, NPC stations, current Jita market prices, item details, sovereignty and recent system activity. Use it whenever a question needs EVE data or a calculation. Says which EVE-Cyno tool to call and in what order, works over MCP or plain REST, and lists the attribution to keep.
+description: Answers EVE Online questions with deterministic tools instead of guesses: ships, modules, fittings (EFT blocks), DPS/EHP/cap stats, skills to fly or build something, manufacturing materials, reprocessing, routes and jump distances between systems, system search, jump-drive planning for capitals, NPC stations, current market prices and price history, Thera connections, item details, sovereignty and recent system activity. Use it whenever a question needs EVE data or a calculation. Says which EVE-Cyno tool to call and in what order, works over MCP or plain REST, and lists the attribution to keep.
 ---
 
 # EVE Online data via the EVE-Cyno tools
@@ -19,22 +19,32 @@ Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https
 | Weapon-locked or unfamiliar hulls (Triglavian, pirate, faction) | `get_hull_facts` (when `compatible_weapons` is non-empty, use only those) |
 | Correct module name for a family ("Steel Plates", "Heat Sink") | `find_canonical_module` (with `size` Small/Medium/Large) |
 | Is this EFT fit legal (CPU, PG, slots)? | `validate_fitting` |
-| DPS, volley, EHP, speed, align, cap stability of an EFT fit | `compute_fit_stats` |
+| DPS, volley, EHP, speed, align, cap stability of an EFT fit | `validate_fitting` already ends with a `Fit stats:` card; `compute_fit_stats` only when it did not (a fixed fit) or to choose charges |
 | Skills needed to fly a ship or build an item | `get_required_skills` (`purpose`: fly or build) |
 | Materials to manufacture an item | `get_production_chain` (`me_level`, `runs`, rig and cost index optional) |
 | Reprocessing output | `get_reprocessing_yield` |
-| Jumps and route between two systems | `get_jumps_between` (`prefer_high_sec`) |
+| Jumps and route between two systems | `get_jumps_between` (`prefer_high_sec`; `avoid`, `via`). For the jump count only, pass `detail: "summary"`; ask for the hop list only when the user wants the route |
+| Distances from one system to a list of systems | `get_jump_distances` (one call, up to 200 systems, nearest first) |
+| Find systems by security, region, faction, wormhole class, stations, belts, planets, ice or distance | `find_systems` (`near` for gate jumps, sort `jumps`) |
+| Facts about named systems | `get_system_info` (up to 50 systems; unenterable Jove or market pseudo-space systems are named "Not enterable") |
+| Jump-drive route for a Jump Freighter, Rorqual, Black Ops, capital or titan (or an Ansiblex chain: ship "Jump Bridge") | `plan_jump_route` (skills default to 5; `waypoints`, `avoid`, `avoid_regions`, `prefer_stations`; `avoid_incursions` or `live_info` cost one live call) |
+| Systems a ship can jump to from X (nearest lowsec station for a Rorqual, titan bridge range, Black Ops reach) | `find_systems` with `jump_range` (`origin`, `ship`) plus the usual filters, sorted by `ly` |
 | Systems of a region by security band | `get_systems_in_region` |
 | NPC stations in a system | `get_npc_stations` |
-| Current Jita price of one item (best sell/buy, order counts) | `get_market_price` (live ESI) |
+| Current price of one item (best sell/buy, order counts); Jita region by default | `get_market_price` (live ESI; `hub` for Jita, Amarr, Dodixie, Rens or Hek main station) |
+| Average prices of many items | `get_average_prices` (up to 200 items; an average of recent trades, not live orders: say so) |
+| Price history or trend of an item | `get_market_history` (live ESI; per day or week, 1-90 days) |
+| Thera or Turnur shortcuts | `get_thera_connections` (live, EvE-Scout; credit "EvE-Scout / Signal Cartel") |
 | Item name, description, volume, mass, group | `get_type_info` (answers from the local SDE, falls back to live ESI) |
-| Who holds sovereignty in a system | `get_sovereignty` (live ESI) |
-| Recent kills and jumps in a system | `get_system_activity` (live ESI) |
+| Who holds sovereignty (names) | `get_sovereignty` with `systems` (up to 50; the single `system_name` form answers with ids only; live ESI) |
+| Activity in the last hour including jumps | `get_system_activity` with `systems` (up to 50; the single `system_name` form has no jumps; live ESI) |
 | ISK value of a list of items | `appraise_items` (an estimate from ESI average prices; a Janice appraisal with the user's Janice key) |
 
 ## Recommended flows
 
-- **Building or reviewing a fit:** `get_ship_bonuses` (and `get_hull_facts` on specialist hulls) to pick the bonused weapon system, `find_canonical_module` for any name you are not sure of, write the EFT block, `validate_fitting`, fix every violation and unresolved module, then `compute_fit_stats` and report its numbers. State the stats basis it reports (all skills V, no implants, default T1 ammo when none is on the EFT line).
+- **Building or reviewing a fit:** `get_ship_bonuses` (and `get_hull_facts` on specialist hulls) to pick the bonused weapon system, `find_canonical_module` for any name you are not sure of, write the EFT block, `validate_fitting`, fix every violation and unresolved module, then report. `validate_fitting` on a valid fit already ends with a `Fit stats:` card (the same engine as `compute_fit_stats`): report it. Call `compute_fit_stats` only when validate did not return one (a fit fixed afterwards) or to choose charges. State the stats basis it reports (all skills V, no implants, default T1 ammo when none is on the EFT line).
+- **Map questions:** answer "nearest highsec system with Clear Icicle to X" style questions in few calls: one `find_systems` per ice type with `security.min` 0.45, `ice_types`, `near.origin`, `sort: jumps`, `limit: 3`, then at most one `get_jump_distances` or `get_jumps_between` with `detail: "summary"` for the chosen candidates.
+- **Batch first:** prefer one list call over many single calls. A call counts as one request whatever its list length (caps: 200 distances or prices, 50 systems, 100 rows).
 - **Item questions:** resolve names with `search_item_by_name` first, then use the exact names in other tools.
 - **Industry:** `get_required_skills` with `purpose: build`, then `get_production_chain`. Only pass rig level or cost index when the user mentioned a structure or system.
 
@@ -44,7 +54,7 @@ Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https
 - `analyze_battle` appears only when the user set the optional "EVE-Cyno API key" (sent as `X-API-Key`). If the user asks for a battle report and it is not in your tool list, tell them the key is free: `/apikey create` in the EVE-Cyno Discord (https://discord.gg/XZzkH38dt9) or ai.eve-cyno.dev, Settings, Data API keys; then add it where your client keeps the server settings: under `/plugin` in Claude Code, as the `X-API-Key` header of the MCP server in other clients, or as the `X-API-Key` header of a REST call. Custom connectors in claude.ai and Claude Desktop reach the server from Anthropic's addresses, so without a key every connector user shares one per-client limit; a free key gives the user their own.
 - `appraise_items` works without any key: it estimates the value from EVE's average prices (ESI, refreshed daily) and says so; tell the user it is an estimate, not live Jita prices. With the user's own Janice key (the optional "Janice API key" in the plugin settings in Claude Code, or the `X-Janice-Key` header in any other client or REST call) it is a Janice appraisal with Jita buy, sell and split totals.
 - Rate limits apply per caller: per API key when one is set, otherwise per client IP (MCP: 20 requests per minute without a key, 120 with one; REST: 10 without, 60 with; 200 requests a day without a key). On `rate_limited` wait for `Retry-After` and do not loop.
-- The live ESI tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`) also share a limit of 5 calls per minute per client without a key, 10 with one (MCP and REST together). `get_type_info` reads the local SDE first and falls back to live ESI, but it still counts against this limit. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
+- The live tools (`get_market_price`, `get_type_info`, `get_sovereignty`, `get_system_activity`, `get_market_history`, `plan_jump_route` with `avoid_incursions` or `live_info` (ESI) and `get_thera_connections` (EVE-Scout)) also share a limit of 5 calls per minute per client without a key, 10 with one (MCP and REST together). `get_type_info` reads the local SDE first and falls back to live ESI, but it still counts against this limit. When the service's ESI budget is spent they fail with `upstream_busy`: say live data is unavailable right now and do not retry in a loop. Their values change; quote them as of the call.
 - Request bodies are capped at 64 KiB on the MCP and tool endpoints.
 - Errors come back as `{"error":{"code","message"}}` (over MCP, an error result with the code first); report the code rather than inventing an answer.
 
@@ -66,12 +76,13 @@ The answer is `{"tool","version","result":{"text","data"},"attribution":[{"name"
 
 ## Not available
 
-No price history (only the current Jita price of one item via `get_market_price`, or an appraisal of a list: an ESI estimate, or Janice with the user's key), no character or corporation data, no killboard, no free-text community-fit search over MCP (`get_fits` and `list_fits` filter by hull and activity; free-text search is the REST `q` parameter, which needs an API key; the Claude Code plugin's `/eve-fits` command searches by hull on the public REST endpoint). If a question needs one of these, say so.
+No character or corporation data, no killboard, no wormhole statics, no moon ore, no free-text community-fit search over MCP (`get_fits` and `list_fits` filter by hull and activity; free-text search is the REST `q` parameter, which needs an API key; the Claude Code plugin's `/eve-fits` command searches by hull on the public REST endpoint). If a question needs one of these, say so.
 
 ## Attribution (keep it)
 
 - Game data is Fenris Creations data under the EVE Developer License Agreement. When you present results in a document, post or shared output, include: "EVE Online and all related marks are trademarks of Fenris Creations hf. Used with limited permission; no official affiliation or endorsement. Data via EVE-Cyno (https://eve-cyno.dev)." A short note is enough in plain chat.
-- Text taken from the EVE University Wiki is CC BY-SA 4.0 (https://wiki.eveuniversity.org/); credit it and keep the licence on derived text.
+- Text taken from the EVE University Wiki is CC BY-SA 4.0 (https://wiki.eveuniversity.org/); credit it and keep the licence on derived text. This includes the ice-belt data (EVE University, CC BY-SA 4.0).
+- Thera and Turnur connection data is EvE-Scout / Signal Cartel (https://www.eve-scout.com/); credit them with the link.
 - Community fits belong to their authors and sites. Every fit carries an `attribution` object (`source`, `source_url`, `author` when known, `license`, `credit`, `license_url`). Show the author and source link next to every fit you show, and never present a community fit as your own.
 - Tool results report their sources (the MCP `_meta` attribution); cite them when asked where a number comes from.
 - Terms of the service: https://data.eve-cyno.dev/terms
