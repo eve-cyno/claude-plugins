@@ -19,7 +19,7 @@ Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https
 | Hull and role bonuses (which weapon system to use) | `get_ship_bonuses` |
 | Weapon-locked or unfamiliar hulls (Triglavian, pirate, faction) | `get_hull_facts` (when `compatible_weapons` is non-empty, use only those) |
 | Correct module name for a family ("Steel Plates", "Heat Sink") | `find_canonical_module` (with `size` Small/Medium/Large) |
-| Modules by slot or meta group ("Tech II mid-slot shield modules") | `find_canonical_module` with `family` (a name part, at least 2 characters) plus `slot` (high, mid, low, rig), `meta` ("Tech II", "Faction", ...), optional `kind` and `limit` (1-30) |
+| Modules by slot or meta group ("Tech II mid-slot shield modules") | `find_canonical_module` with `family` (a name part, at least 2 characters) plus `slot` (high, mid, low, rig) and/or `meta` ("Tech II", "Faction", ...), optional `kind` and `limit` (1-30) |
 | Is this EFT fit legal (CPU, PG, slots)? | `validate_fitting` |
 | DPS, volley, EHP, speed, align, cap stability of an EFT fit | `validate_fitting` on a valid fit already ends with a `Fit stats:` card; `compute_fit_stats` only when it did not (a fixed fit) or to choose charges |
 | Browse community fits cheaply | `list_fits`, or `get_fits` with `include_eft: false`; then `get_fits` with `fit_id` for the one fit to copy |
