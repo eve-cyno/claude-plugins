@@ -19,11 +19,12 @@ Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https
 | Hull and role bonuses (which weapon system to use) | `get_ship_bonuses` |
 | Weapon-locked or unfamiliar hulls (Triglavian, pirate, faction) | `get_hull_facts` (when `compatible_weapons` is non-empty, use only those) |
 | Correct module name for a family ("Steel Plates", "Heat Sink") | `find_canonical_module` (with `size` Small/Medium/Large) |
-| Modules by slot or meta group ("Tech II mid-slot shield modules") | `find_canonical_module` with `slot` (high, mid, low, rig), `meta` ("Tech II", "Faction", ...), optional `kind` and `limit` (1-30) |
+| Modules by slot or meta group ("Tech II mid-slot shield modules") | `find_canonical_module` with `family` (a name part, at least 2 characters) plus `slot` (high, mid, low, rig), `meta` ("Tech II", "Faction", ...), optional `kind` and `limit` (1-30) |
 | Is this EFT fit legal (CPU, PG, slots)? | `validate_fitting` |
 | DPS, volley, EHP, speed, align, cap stability of an EFT fit | `validate_fitting` on a valid fit already ends with a `Fit stats:` card; `compute_fit_stats` only when it did not (a fixed fit) or to choose charges |
+| Browse community fits cheaply | `list_fits`, or `get_fits` with `include_eft: false`; then `get_fits` with `fit_id` for the one fit to copy |
 | Skills needed to fly a ship or build an item | `get_required_skills` (`purpose`: fly or build) |
-| Skill plan or training time for one or more items | `get_required_skills` with `items` (up to 20) and `training_time: true` (an Omega clone from zero SP; pass `attributes` for the character's own five values, all or none) |
+| Skill plan or training time for one or more items | `get_required_skills` with `items` (up to 20) and `training_time: true` (an Omega clone from zero SP, each skill at its best remap 27/21 with no implants: the fastest possible time, not a typical one; pass `attributes` for the character's own five values, all or none) |
 | Materials to manufacture an item | `get_production_chain` (`me_level`, `runs`, rig and cost index optional) |
 | Build cost of an item, job fee in a system | `get_production_chain` with `include_cost: true` and `system` (live cost index; `facility_tax_pct` for a structure) |
 | Planetary production chain (P1-P4 commodity down to raw resources) | `get_production_chain` with the P1-P4 name (`runs` counts cycles of the final schematic; ME and rigs do not apply) |
@@ -39,7 +40,6 @@ Use the `eve-cyno` MCP tools when your client has them (remote MCP server `https
 | Nearest station with a service, or the nearest mission agent of a level, division or corporation | `get_npc_stations` with `near` (`origin`, `max_jumps`), `services`, `agent` (`level`, `division`, `corporation`, `faction`, `kind`), `limit` (1-50) |
 | LP store value of an NPC corporation (best offers by ISK per LP) | `get_lp_offers` (`corporation`; `item`, `sort`, `limit` optional; live ESI, priced at average prices, not live orders: say so) |
 | Current price of one item (best sell/buy, order counts); Jita region by default | `get_market_price` (live ESI; `hub` for Jita, Amarr, Dodixie, Rens or Hek main station) |
-| Browse community fits cheaply | `list_fits`, or `get_fits` with `include_eft: false`; then `get_fits` with `fit_id` for the one fit to copy |
 | Average prices of many items | `get_average_prices` (up to 200 items; an average of recent trades, not live orders: say so) |
 | Price history or trend of an item | `get_market_history` (live ESI; per day or week, 1-90 days) |
 | Thera or Turnur shortcuts | `get_thera_connections` (live, EvE-Scout; credit "EvE-Scout / Signal Cartel") |
